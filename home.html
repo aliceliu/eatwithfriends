@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title> Eat With Friends </title>
+<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+<body>
+	<h1> Eat With Friends </h1>
+	<div id="fb-root"></div>
+
+    <fb:login-button autologoutlink="true" scope="publish_stream"></fb:login-button>
+
+    {% if current_user %}
+    	<form action="/result">
+    	<p> I want to eat
+	      	<select name="meal">
+	      		<option value="lunch">Lunch</option>
+	      		<option value="dinner">Dinner</option>
+	      	</select></p>
+
+	    	<p> <input type="checkbox" name="choice"> Show myself as available </p>
+	    	<button type="submit">Find friends to eat with!</button>
+    	</form>
+
+    {% else %}
+    	<p> Sign in to find friends to eat with! </p>
+    {% endif %}
+    <script>
+      window.fbAsyncInit = function() {
+        FB.init({appId: '{{ facebook_app_id }}', status: true, cookie: true,
+                 xfbml: true});
+
+        FB.Event.subscribe('{% if current_user %}FB.logout{% else %}FB.login{% endif %}', function(response) {
+          {% if current_user %} window.location = "/logout" {% else %} window.location.reload(); {% endif %}
+        });
+      };
+      (function() {
+        var e = document.createElement('script');
+        e.type = 'text/javascript';
+        e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
+        e.async = true;
+        document.getElementById('fb-root').appendChild(e);
+      }());
+    </script>
+</body>
+</html>

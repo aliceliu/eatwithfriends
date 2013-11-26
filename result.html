@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title> Eat With Friends </title>
+<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+<body>
+	<h1> Eat With Friends </h1>
+    <div id="fb-root"></div>
+    <a href="{{ current_user.profile_url }}"><img src="http://graph.facebook.com/{{ current_user.id }}/picture?type=square"/></a>
+    <fb:login-button autologoutlink="true" scope="publish_stream"></fb:login-button>
+
+    <form>
+      <p> I want to eat
+          <select name="meal">
+            <option value="lunch">Lunch</option>
+            <option value="dinner">Dinner</option>
+          </select></p>
+
+      <p> <input type="checkbox" name="status"> Show myself as available </p>
+
+      <button type="submit" name="status" value="find">Find friends to eat with!</button>
+    </form>
+
+    <div>
+      <p> People who are free for {{meal}} </p>
+      <ul>
+      {% for friend in result %}
+        <li><a href={{ friend.profile_url }}> <img src="http://graph.facebook.com/{{ friend.id }}/picture?type=square"/> {{ friend.name }} </a></li>
+      {% endfor %}
+      </ul>
+    </div>
+
+    <script>
+      window.fbAsyncInit = function() {
+        FB.init({appId: '{{ facebook_app_id }}', status: true, cookie: true,
+                 xfbml: true});
+        FB.Event.subscribe('{% if current_user %}auth.logout{% else %}auth.login{% endif %}', function(response) {
+          {% if current_user %} window.location = "/logout" {% else %} window.location.reload(); {% endif %}
+        });
+      };
+      (function() {
+        var e = document.createElement('script');
+        e.type = 'text/javascript';
+        e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
+        e.async = true;
+        document.getElementById('fb-root').appendChild(e);
+      }());
+    </script>
+</body>
+</html>
